@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Reports</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-4">
+  <div class="d-flex justify-content-between">
+    <h1>Reports</h1>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-light">Back</a>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for cat, msg in messages %}
+        <div class="alert alert-{{ cat }}">{{ msg }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <table class="table mt-3">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Original Filename</th>
+        <th>Patient</th>
+        <th>Uploaded At</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in reports %}
+      <tr>
+        <td>{{ r.id }}</td>
+        <td>{{ r.filename_orig }}</td>
+        <td>{{ r.owner.email if r.owner else r.user_id }}</td>
+        <td>{{ r.uploaded_at }}</td>
+        <td>
+          <a href="{{ url_for('reports.view_report', report_id=r.id) }}" class="btn btn-sm btn-success">Download</a>
+
+          <form style="display:inline" method="post" action="{{ url_for('reports.delete_report', report_id=r.id) }}">
+            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this report?')">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+</body>
+</html>
